@@ -92,7 +92,7 @@ const InboxPage = () => {
   useEffect(() => {
     const storedWalletConnected = localStorage.getItem("walletConnected");
     const storedSignerAddress = JSON.parse(
-      localStorage.getItem("signerAddress")
+      localStorage.getItem("signerAddress"),
     );
     if (storedWalletConnected && storedSignerAddress) {
       setWalletConnected(JSON.parse(storedWalletConnected));
@@ -107,33 +107,29 @@ const InboxPage = () => {
       <button
         className="home-button"
         style={{ ...styles.ButtonStyledStyle, marginLeft: 10 }}
-        onClick={() => connectWallet()}
-      >
+        onClick={() => connectWallet()}>
         {walletConnected ? "Connected" : "Connect Wallet"}
       </button>
       {walletConnected && (
         <button
           className="home-button"
           style={{ ...styles.ButtonStyledStyle, marginLeft: 10 }}
-          onClick={() => disconnectWallet()}
-        >
+          onClick={() => disconnectWallet()}>
           Logout
         </button>
       )}
-      <h1>Quickstart XMTP Frames</h1>
+      <h1>Open Frames Quickstart</h1>
       <section className="App-section">
         <button
           className="home-button"
           style={styles.ButtonStyledStyle}
-          onClick={() => window.FloatingInbox.open()}
-        >
+          onClick={() => window.FloatingInbox.open()}>
           Open
         </button>
         <button
           className="home-button"
           style={{ ...styles.ButtonStyledStyle, marginLeft: 10 }}
-          onClick={() => window.FloatingInbox.close()}
-        >
+          onClick={() => window.FloatingInbox.close()}>
           Close
         </button>
       </section>
