@@ -2,7 +2,7 @@
 
 The XMTP community has been actively discussing and implementing ways to enhance user experience by supporting frames within XMTP applications. An effort in this direction is detailed in a community post [Supporting Frames in XMTP](https://community.xmtp.org/t/supporting-frames-in-xmtp/535).
 
-https://github.com/open-frames/open-frames-quickstart/assets/1447073/9e01e560-af69-4aec-bdbd-db486d7e432f
+https://github.com/fabriguespe/xmtp-quickstart-frames/assets/1447073/adf38f79-703c-4759-8523-4feb0ebb2d0e
 
 ### Validating Frame URL
 
