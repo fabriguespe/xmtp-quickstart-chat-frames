@@ -1,6 +1,6 @@
 const Frame = ({ info, handleClick, frameButtonUpdating, frameUrl }) => {
   const { buttons, image, title } = info;
-  console.log(buttons);
+
   const styles = {
     buttonContainer: {
       display: "flex",
@@ -50,8 +50,7 @@ const Frame = ({ info, handleClick, frameButtonUpdating, frameUrl }) => {
               key={`${button}-${index}`}
               onClick={handlePress}
               disabled={frameButtonUpdating === index + 1}
-              style={buttonStyle}
-            >
+              style={buttonStyle}>
               {button.label}{" "}
               {button.action === "post_redirect" && (
                 <span style={styles.redirectIcon}>↪</span>
