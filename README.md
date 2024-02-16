@@ -162,4 +162,3 @@ if (actionType === "post") {
   window.open(redirectedTo, "_blank").focus();
 }
 ```
-# -open-frames-quickstart
