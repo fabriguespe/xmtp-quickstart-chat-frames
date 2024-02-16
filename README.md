@@ -1,4 +1,4 @@
-# Open Frames Quickstart
+# XMTP Frames Quickstart
 
 The XMTP community has been actively discussing and implementing ways to enhance user experience by supporting frames within XMTP applications. An effort in this direction is detailed in a community post [Supporting Frames in XMTP](https://community.xmtp.org/t/supporting-frames-in-xmtp/535).
 
