@@ -144,7 +144,6 @@ const MessageItem = ({
   const isSender = senderAddress === client?.address;
 
   const showFrame = isValidFrame(frameMetadata);
-  console.log(isXmtpFrame(frameMetadata), "isXmtpFrame");
   return (
     <li
       style={isSender ? styles.senderMessage : styles.receiverMessage}
