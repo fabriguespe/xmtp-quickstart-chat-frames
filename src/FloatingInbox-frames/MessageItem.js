@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useClient } from "@xmtp/react-sdk";
-import { FrameButtons } from "../Frames/FrameButtons";
+import { Frame } from "../Frames/Frame";
 import {
   getFrameTitle,
   isValidFrame,
@@ -23,6 +23,7 @@ const MessageItem = ({
   const [textInputValue, setTextInputValue] = useState("");
 
   const conversationTopic = message.conversationTopic;
+
   const handleFrameButtonClick = async (buttonIndex, action = "post") => {
     console.log(buttonIndex, action);
     if (!frameMetadata || !client || !frameMetadata?.frameInfo?.buttons) {
@@ -144,6 +145,7 @@ const MessageItem = ({
   const isSender = senderAddress === client?.address;
 
   const showFrame = isValidFrame(frameMetadata);
+
   return (
     <li
       style={isSender ? styles.senderMessage : styles.receiverMessage}
@@ -152,7 +154,7 @@ const MessageItem = ({
         {!frameMetadata?.frameInfo && renderMessage(message)}
         {isLoading && <div>Loading...</div>}
         {showFrame && !isLoading && frameMetadata?.frameInfo && (
-          <FrameButtons
+          <Frame
             image={frameMetadata?.frameInfo?.image.content}
             title={getFrameTitle(frameMetadata)}
             buttons={getOrderedButtons(frameMetadata)}
