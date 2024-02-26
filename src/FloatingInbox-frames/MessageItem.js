@@ -24,6 +24,7 @@ const MessageItem = ({
 
   const conversationTopic = message.conversationTopic;
   const handleFrameButtonClick = async (buttonIndex, action = "post") => {
+    console.log(buttonIndex, action);
     if (!frameMetadata || !client || !frameMetadata?.frameInfo?.buttons) {
       return;
     }
@@ -31,10 +32,10 @@ const MessageItem = ({
     if (!frameInfo.buttons) {
       return;
     }
-    const button = frameInfo.buttons[`${buttonIndex}`];
+    const button = frameInfo.buttons[buttonIndex];
+    console.log(buttonIndex, frameInfo.buttons[buttonIndex]);
 
     setFrameButtonUpdating(buttonIndex);
-
     const framesClient = new FramesClient(client);
     const postUrl = button.target || frameInfo.postUrl || frameUrl;
     const payload = await framesClient.signFrameAction({
@@ -44,7 +45,7 @@ const MessageItem = ({
       conversationTopic,
       participantAccountAddresses: [peerAddress, client.address],
     });
-
+    console.log("action", action);
     if (action === "post") {
       const updatedFrameMetadata = await framesClient.proxy.post(
         postUrl,
@@ -143,6 +144,7 @@ const MessageItem = ({
 
   const isSender = senderAddress === client?.address;
 
+  const showFrame = isValidFrame(frameMetadata);
   return (
     <li
       style={isSender ? styles.senderMessage : styles.receiverMessage}
@@ -150,7 +152,7 @@ const MessageItem = ({
       <div style={styles.messageContent}>
         {!frameMetadata?.frameInfo && renderMessage(message)}
         {isLoading && <div>Loading...</div>}
-        {!isLoading && frameMetadata?.frameInfo && (
+        {showFrame && !isLoading && frameMetadata?.frameInfo && (
           <FrameButtons
             image={frameMetadata?.frameInfo?.image.content}
             title={getFrameTitle(frameMetadata)}

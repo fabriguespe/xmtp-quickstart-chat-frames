@@ -62,7 +62,7 @@ export const FullMessageController = ({
       conversationTopic: conversationTopic as string,
       participantAccountAddresses: [client.address, conversation.peerAddress],
     });
-
+    console.log('action', action)
     if (action === "post") {
       const updatedFrameMetadata = await framesClient.proxy.post(
         postUrl,
@@ -74,6 +74,7 @@ export const FullMessageController = ({
         postUrl,
         payload,
       );
+      console.log('redirectedTo', redirectedTo)
       window.open(redirectedTo, "_blank");
     } else if (action === "link" && button?.target) {
       window.open(button.target, "_blank");

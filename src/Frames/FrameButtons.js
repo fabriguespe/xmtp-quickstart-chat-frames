@@ -42,12 +42,13 @@ export const FrameButtons = ({
   textInput,
   onTextInputChange,
 }) => {
+  console.log(buttons, "buttons");
   const renderButton = (button, index) => {
-    console.log(button);
     if (!button) {
       return null;
     }
-    const handlePress = () => handleClick(index + 1);
+
+    const handlePress = () => handleClick(button.buttonIndex, button.action);
     const buttonStyle = {
       ...styles.button,
       marginRight: index % 2 === 0 ? "4px" : "0px", // Adjust marginRight for every second button

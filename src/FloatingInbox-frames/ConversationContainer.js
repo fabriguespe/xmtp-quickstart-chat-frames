@@ -144,8 +144,7 @@ export const ConversationContainer = ({
                 style={styles.createNewButton}
                 onClick={() => {
                   setSelectedConversation({ messages: [] });
-                }}
-              >
+                }}>
                 Create new conversation
               </button>
             </>
