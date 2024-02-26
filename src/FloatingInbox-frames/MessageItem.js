@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useClient } from "@xmtp/react-sdk";
-import { getFrameInfo, Frame } from "./Frame"; // Ensure this path is correct
+import { FrameButtons } from "../Frames/FrameButtons";
+import {
+  getFrameTitle,
+  isValidFrame,
+  getOrderedButtons,
+  isXmtpFrame,
+} from "../Frames/FrameInfo";
 import { FramesClient, signFrameAction } from "@xmtp/frames-client";
+import { readMetadata } from "../Frames/openFrames"; // Ensure you have this helper or implement it
 
 const MessageItem = ({
   message,
@@ -10,100 +17,70 @@ const MessageItem = ({
   isPWA = false,
 }) => {
   const { client } = useClient();
-
-  const [frameInfo, setFrameInfo] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [frameMetadata, setFrameMetadata] = useState();
   const [frameButtonUpdating, setFrameButtonUpdating] = useState(0);
-  const [isLoading, setIsLoading] = useState(true); // Add a loading state
+  const [textInputValue, setTextInputValue] = useState("");
 
-  const handleFrameButtonClick = async (buttonNumber) => {
-    if (!frameInfo) {
+  const conversationTopic = message.conversationTopic;
+  const handleFrameButtonClick = async (buttonIndex, action = "post") => {
+    if (!frameMetadata || !client || !frameMetadata?.frameInfo?.buttons) {
       return;
     }
-    const actionType = frameInfo.buttons[buttonNumber - 1].action;
-    console.log("Action type: ", actionType);
-    console.log(frameInfo);
+    const { frameInfo, url: frameUrl } = frameMetadata;
+    if (!frameInfo.buttons) {
+      return;
+    }
+    const button = frameInfo.buttons[`${buttonIndex}`];
 
-    const conversationTopic = message.conversationTopic;
-
-    setFrameButtonUpdating(buttonNumber);
+    setFrameButtonUpdating(buttonIndex);
 
     const framesClient = new FramesClient(client);
-    const frameUrl = frameInfo.url;
+    const postUrl = button.target || frameInfo.postUrl || frameUrl;
     const payload = await framesClient.signFrameAction({
       frameUrl,
-      buttonIndex: buttonNumber,
+      inputText: textInputValue || undefined,
+      buttonIndex,
       conversationTopic,
       participantAccountAddresses: [peerAddress, client.address],
     });
-    console.log("Payload: ", payload);
 
-    try {
-      if (actionType === "post") {
-        const updatedFrameMetadata = await framesClient.proxy.post(
-          frameInfo.postUrl,
-          payload
-        );
-        const updatedFrameInfo = getFrameInfo(
-          updatedFrameMetadata.extractedTags
-        );
-        setFrameInfo(updatedFrameInfo);
-      } else if (actionType === "post_redirect") {
-        // If the button action type was `post_redirect`
-        console.log("Redirecting to: ", frameUrl);
-        const { redirectedTo } = await framesClient.proxy.postRedirect(
-          frameInfo.postUrl,
-          payload
-        );
-        console.log("Redirected to: ", redirectedTo);
-        window.open(redirectedTo, "_blank").focus();
-      }
-    } catch (error) {
-      console.log("Error signing frame action: ", error);
-      setFrameButtonUpdating(0);
-      return;
+    if (action === "post") {
+      const updatedFrameMetadata = await framesClient.proxy.post(
+        postUrl,
+        payload,
+      );
+      setFrameMetadata(updatedFrameMetadata);
+    } else if (action === "post_redirect") {
+      const { redirectedTo } = await framesClient.proxy.postRedirect(
+        postUrl,
+        payload,
+      );
+      window.open(redirectedTo, "_blank");
+    } else if (action === "link" && button?.target) {
+      window.open(button.target, "_blank");
     }
-
-    setFrameButtonUpdating(buttonNumber);
+    setFrameButtonUpdating(0);
   };
 
   useEffect(() => {
     setIsLoading(true);
-    try {
-      if (typeof message.content === "string") {
-        const words = message.content?.split(/(\r?\n|\s+)/);
-        const urlRegex =
-          /^(http[s]?:\/\/)?([a-z0-9.-]+\.[a-z0-9]{1,}\/.*|[a-z0-9.-]+\.[a-z0-9]{1,})$/i;
+    if (typeof message.content === "string") {
+      const words = message.content.split(/(\r?\n|\s+)/);
+      const urlRegex =
+        /^(http[s]?:\/\/)?([a-z0-9.-]+\.[a-z0-9]{1,}\/.*|[a-z0-9.-]+\.[a-z0-9]{1,})$/i;
 
-        // Split potential concatenated URLs based on "http" appearing in the middle of the string
-        const splitUrls = (word) => {
-          const splitPattern = /(?=http)/g;
-          return word.split(splitPattern);
-        };
-
-        // Then, in your Promise.all block, adjust the logic to first split words that could be concatenated URLs
-        void Promise.all(
-          words.flatMap(splitUrls).map(async (word) => {
-            // Use flatMap with the splitUrls function
-            const isUrl = !!word.match(urlRegex)?.[0];
-            if (isUrl) {
-              try {
-                const framesClient = new FramesClient(client);
-                const metadata = await framesClient.proxy.readMetadata(word);
-                if (metadata) {
-                  const info = getFrameInfo(metadata.extractedTags);
-                  console.log("Frame info: ", info);
-                  info.url = metadata.url;
-                  setFrameInfo(info);
-                }
-              } catch {
-                console.log("Error parsing message content");
-              }
+      void Promise.all(
+        words.map(async (word) => {
+          const isUrl = !!word.match(urlRegex)?.[0];
+          if (isUrl) {
+            const metadata = await readMetadata(word); // Ensure you have implemented this function
+            if (metadata) {
+              setFrameMetadata(metadata);
             }
-          })
-        );
-      }
-    } catch {
-      console.log("Error parsing message content");
+          }
+        }),
+      );
     }
     setIsLoading(false);
   }, [message?.content]);
@@ -169,26 +146,29 @@ const MessageItem = ({
   return (
     <li
       style={isSender ? styles.senderMessage : styles.receiverMessage}
-      key={message.id}
-    >
+      key={message.id}>
       <div style={styles.messageContent}>
-        {!frameInfo && renderMessage(message)}
+        {!frameMetadata?.frameInfo && renderMessage(message)}
         {isLoading && <div>Loading...</div>}
+        {!isLoading && frameMetadata?.frameInfo && (
+          <FrameButtons
+            image={frameMetadata?.frameInfo?.image.content}
+            title={getFrameTitle(frameMetadata)}
+            buttons={getOrderedButtons(frameMetadata)}
+            handleClick={handleFrameButtonClick}
+            frameButtonUpdating={frameButtonUpdating}
+            interactionsEnabled={isXmtpFrame(frameMetadata)}
+            textInput={frameMetadata?.frameInfo?.textInput?.content}
+            onTextInputChange={setTextInputValue}
+          />
+        )}
         <div style={styles.footer}>
           <span style={styles.timeStamp}>
             {`${new Date(message.sentAt).getHours()}:${String(
-              new Date(message.sentAt).getMinutes()
+              new Date(message.sentAt).getMinutes(),
             ).padStart(2, "0")}`}
           </span>
         </div>
-        {!isLoading && frameInfo && (
-          <Frame
-            info={frameInfo}
-            handleClick={handleFrameButtonClick}
-            frameButtonUpdating={frameButtonUpdating}
-            frameUrl={frameInfo.url} // Passing the new prop
-          />
-        )}
       </div>
     </li>
   );

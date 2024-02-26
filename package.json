@@ -14,8 +14,7 @@
     "react-dom": ">=16.0.0"
   },
   "dependencies": {
-    "@xmtp/frames-client": "^0.3.1",
-    "@xmtp/frames-validator": "^0.4.0",
+    "@xmtp/frames-client": "^0.4.2",
     "@xmtp/react-sdk": "^5.0.1",
     "buffer": "^6.0.3",
     "ethers": "^5.7.0",
@@ -24,6 +23,9 @@
     "react-markdown": "^8.0.7",
     "react-scripts": "5.0.1",
     "styled-components": "^6.0.8"
+  },
+  "devDependencies": {
+    "@open-frames/proxy-client": "0.2.0"
   },
   "eslintConfig": {
     "extends": [
