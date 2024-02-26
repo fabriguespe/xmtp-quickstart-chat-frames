@@ -9,7 +9,7 @@ import {
 } from "../Frames/FrameInfo";
 import { FramesClient } from "@xmtp/frames-client";
 import { readMetadata } from "../Frames/openFrames"; // Ensure you have this helper or implement it
-//s
+
 const MessageItem = ({
   message,
   peerAddress,
