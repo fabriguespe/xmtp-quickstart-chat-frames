@@ -72,45 +72,56 @@ export const FrameButtons = ({
       <a href={""} target="_blank" rel="noopener noreferrer">
         <img src={image} alt={title} style={styles.imageFrame} />
       </a>
-      <div style={styles.buttonContainer}>
-        {buttons.length <= 2 && (
-          <div style={styles.buttonRow}>
-            {buttons.map((button, index) => renderButton(button, index))}
+      {interactionsEnabled && (
+        <>
+          <div style={styles.buttonContainer}>
+            {buttons.length <= 2 && (
+              <div style={styles.buttonRow}>
+                {buttons.map((button, index) => renderButton(button, index))}
+              </div>
+            )}
+            {buttons.length === 3 && (
+              <>
+                <div style={styles.buttonRow}>
+                  {buttons
+                    .slice(0, 2)
+                    .map((button, index) => renderButton(button, index))}
+                </div>
+                <div style={styles.buttonRow}>
+                  {renderButton(buttons[2], 2)}
+                </div>
+              </>
+            )}
+            {buttons.length >= 4 && (
+              <>
+                <div style={styles.buttonRow}>
+                  {buttons
+                    .slice(0, 2)
+                    .map((button, index) => renderButton(button, index))}
+                </div>
+                <div style={styles.buttonRow}>
+                  {buttons
+                    .slice(2, 4)
+                    .map((button, index) => renderButton(button, index + 2))}
+                </div>
+              </>
+            )}
           </div>
-        )}
-        {buttons.length === 3 && (
-          <>
-            <div style={styles.buttonRow}>
-              {buttons
-                .slice(0, 2)
-                .map((button, index) => renderButton(button, index))}
-            </div>
-            <div style={styles.buttonRow}>{renderButton(buttons[2], 2)}</div>
-          </>
-        )}
-        {buttons.length >= 4 && (
-          <>
-            <div style={styles.buttonRow}>
-              {buttons
-                .slice(0, 2)
-                .map((button, index) => renderButton(button, index))}
-            </div>
-            <div style={styles.buttonRow}>
-              {buttons
-                .slice(2, 4)
-                .map((button, index) => renderButton(button, index + 2))}
-            </div>
-          </>
-        )}
-      </div>
-      {interactionsEnabled && textInput !== undefined && (
-        <input
-          type="text"
-          value={textInput}
-          onChange={onTextInputChange} // Call the provided function when text input changes
-          style={styles.textInput} // Apply your text input styling here
-          disabled={!interactionsEnabled} // Disable text input if interactions are disabled
-        />
+          {textInput !== undefined && (
+            <input
+              type="text"
+              value={textInput}
+              onChange={onTextInputChange} // Call the provided function when text input changes
+              style={styles.textInput} // Apply your text input styling here
+              disabled={!interactionsEnabled} // This is now redundant but left for clarity
+            />
+          )}
+        </>
+      )}
+      {!interactionsEnabled && (
+        <div style={styles.buttonContainer}>
+          <span>Frame interactions not supported</span>
+        </div>
       )}
     </>
   );

@@ -7,7 +7,7 @@ import {
   getOrderedButtons,
   isXmtpFrame,
 } from "../Frames/FrameInfo";
-import { FramesClient, signFrameAction } from "@xmtp/frames-client";
+import { FramesClient } from "@xmtp/frames-client";
 import { readMetadata } from "../Frames/openFrames"; // Ensure you have this helper or implement it
 
 const MessageItem = ({
@@ -45,7 +45,6 @@ const MessageItem = ({
       conversationTopic,
       participantAccountAddresses: [peerAddress, client.address],
     });
-    console.log("action", action);
     if (action === "post") {
       const updatedFrameMetadata = await framesClient.proxy.post(
         postUrl,
@@ -145,6 +144,7 @@ const MessageItem = ({
   const isSender = senderAddress === client?.address;
 
   const showFrame = isValidFrame(frameMetadata);
+  console.log(isXmtpFrame(frameMetadata), "isXmtpFrame");
   return (
     <li
       style={isSender ? styles.senderMessage : styles.receiverMessage}
