@@ -1,162 +1,41 @@
 # XMTP Frames Quickstart
 
-The XMTP community has been actively discussing and implementing ways to enhance user experience by supporting frames within XMTP applications. An effort in this direction is detailed in a community post [Supporting Frames in XMTP](https://community.xmtp.org/t/supporting-frames-in-xmtp/535).
+## Installation
 
-https://github.com/fabriguespe/xmtp-quickstart-frames/assets/1447073/adf38f79-703c-4759-8523-4feb0ebb2d0e
-
-### Validating Frame URL
-
-The validation of frame URLs is performed using a regular expression to identify URLs within the message content. Once a URL is identified, it's processed to extract metadata, including frame information.
-
-```jsx
-const words = message.content?.split(/(\r?\n|\s+)/);
-const urlRegex =
-  /^(http[s]?:\/\/)?([a-z0-9.-]+\.[a-z0-9]{1,}\/.*|[a-z0-9.-]+\.[a-z0-9]{1,})$/i;
-
-// Split potential concatenated URLs based on "http" appearing in the middle of the string
-const splitUrls = (word) => {
-  const splitPattern = /(?=http)/g;
-  return word.split(splitPattern);
-};
-
-// Then, in your Promise.all block, adjust the logic to first split words that could be concatenated URLs
-void Promise.all(
-  words.flatMap(splitUrls).map(async (word) => {
-    // Use flatMap with the splitUrls function
-    const isUrl = !!word.match(urlRegex)?.[0];
-    if (isUrl) {
-      //Get frame info
-    }
-  }),
-);
+```bash
+bun install
+bun start
 ```
 
-### Getting Frame Metadata
+## Introduction
 
-Frame metadata is retrieved using the `FramesClient.readMetadata` method. This metadata includes essential frame details such as image, title, buttons, and post URL.
+The XMTP Frames guide you're looking at is designed to help developers integrate XMTP frames into their applications. It covers both the use of protocol libraries, which enable the creation and handling of XMTP frames, and the practical aspects of rendering these frames within an application. Here's a breakdown to clarify the separation:
 
-```jsx
-const BUTTON_PREFIX = "fc:frame:button:";
-const IMAGE_PREFIX = "fc:frame:image";
-const POST_URL_PREFIX = "fc:frame:post_url";
-const TITLE_PREFIX = "og:title";
+### Protocol Libraries
 
-const buttons = [];
-let image = "";
-let postUrl = "";
-let title = "";
-for (const key in extractedTags) {
-  if (key.startsWith(BUTTON_PREFIX)) {
-    if (!key.includes(":action")) {
-      const buttonIndex = parseInt(key.replace(BUTTON_PREFIX, ""), 10) - 1;
-      // Initialize the button object if it doesn't exist
-      buttons[buttonIndex] = buttons[buttonIndex] || {};
-      // Set the label for the button
-      buttons[buttonIndex].label = extractedTags[key];
-    }
-  } else if (key.startsWith(IMAGE_PREFIX)) {
-    image = extractedTags[key];
-  } else if (key.startsWith(POST_URL_PREFIX)) {
-    postUrl = extractedTags[key];
-  } else if (key.startsWith(TITLE_PREFIX)) {
-    title = extractedTags[key];
-  }
+These are the foundational tools that allow developers to create, sign, and manage XMTP frames. The protocol libraries are essential for interacting with the XMTP network at a lower level, handling the creation of frames, signing payloads, and managing frame actions. Key aspects include:
 
-  // Separately handle action tags to fill the actions object and directly assign to buttons
-  if (key.includes(":action")) {
-    const actionIndex = parseInt(key.split(":")[3], 10) - 1; // Adjusted to match buttonIndex calculation
-    // Initialize the button object if it doesn't exist
-    buttons[actionIndex] = buttons[actionIndex] || {};
-    // Set the action for the button
-    buttons[actionIndex].action = extractedTags[key];
-  }
-}
-```
+- [**Install Required Packages**](https://xmtp.org/docs/build/frames#install-required-packages): To begin, add the necessary XMTP packages to your project.
+- [**Declare Protocol Compatibility**](https://xmtp.org/docs/build/frames#declare-protocol-compatibility): Ensure your application can interact with XMTP frames by declaring protocol compatibility.
+- [**Validate Incoming Messages**](https://xmtp.org/docs/build/frames#Validate-Incoming-Messages): Checks if a URL in message content is suitable for frame processing.
+- [**Enable Secure Communication**](https://xmtp.org/docs/build/frames#enable-secure-communication): Implements security measures to authenticate and secure frame actions, ensuring the integrity and origin of frame interactions.
 
-### Rendering Frames
+### Rendering Frames in Your Application
 
-Frames are rendered by dynamically creating a `Frame` component based on the extracted frame information. This component is responsible for displaying the frame's content, including images, titles, and interactive buttons.
+<div class=" rabbit  p-5 ">
 
-```jsx
-//word is the extracted frame url
-const framesClient = new FramesClient(client);
-const metadata = await framesClient.proxy.readMetadata(word);
-if (metadata) {
-  const info = getFrameInfo(metadata.extractedTags);
-  console.log("Frame info: ", info);
-  info.url = metadata.url;
-  setFrameInfo(info);
-}
-```
+📥 <b>Need a quick reference?</b> Check out this GitHub repo: <a href="https://github.com/fabriguespe/xmtp-quickstart-frames">xmtp-quickstart-frames</a>
 
-```jsx
-{
-  !isLoading && frameInfo && (
-    <Frame
-      info={frameInfo}
-      handleClick={handleFrameButtonClick}
-      frameButtonUpdating={frameButtonUpdating}
-      frameUrl={frameInfo.url} // Passing the new prop
-    />
-  );
-}
-```
+</div>
 
-### Handling Clicks in the Frames
+This part of the guide focuses on how to render XMTP frames within your application, making the frames interactive and visually integrated. It includes:
 
-Clicks within the frame are handled by the `handleFrameButtonClick` function. This function determines the action to be taken based on the button clicked within the frame.
+- [**Validating Frame URL**](https://xmtp.org/docs/build/frames#validating-frame-url): Ensuring the URL embedded within the message content is appropriate for frame processing and meets XMTP standards.
+- [**Getting Frame Metadata**](https://xmtp.org/docs/build/frames#getting-frame-metadata): Extracting and processing metadata from frames, including images, titles, buttons, and URLs, to facilitate rendering and interaction.
+- [**Rendering Frames**](https://xmtp.org/docs/build/frames#rendering-frames): Dynamically generating a `Frame` component using the extracted metadata to visually present the frame content within your application.
+- [**Handling Clicks in the Frames**](https://xmtp.org/docs/build/frames#handling-clicks-in-the-frames): Interpreting user interactions within a frame to determine and execute the corresponding action, such as navigating to a link or updating frame content.
+- [**Sign XMTP Payload**](https://xmtp.org/docs/build/frames#sign-xmtp-payload): Authenticating and securing frame actions by signing XMTP payloads, ensuring the integrity and origin of frame interactions.
 
-```jsx
-  const handleFrameButtonClick = async (buttonNumber) => {
-    if (!frameInfo) {
-      return;
-    }
-    const actionType = frameInfo.buttons[buttonNumber - 1].action;
-    console.log("Action type: ", actionType);
-    console.log(frameInfo);
+### Use cases
 
-    const conversationTopic = message.conversationTopic;
-
-    //Continue with Frames logic
-    ...
-```
-
-### Sign XMTP Payload
-
-To sign the XMTP payload for frame actions, the `FramesClient.signFrameAction` method is used. This method signs the action to be taken with the frame, such as posting back to the frame's URL.
-
-```jsx
-const xmtpClient = await Client.create(wallet);
-const framesClient = new FramesClient(xmtpClient);
-const payload = await framesClient.signFrameAction({
-  frameUrl,
-  buttonIndex: buttonNumber,
-  conversationTopic,
-  participantAccountAddresses: [peerAddress, xmtpClient.address],
-});
-console.log("Payload: ", payload);
-```
-
-### Handle Frame actions
-
-If the frame action involves a redirect, the `framesClient.proxy.postRedirect` method is used to handle the redirection to the specified URL after the frame action is executed.
-
-```jsx
-if (actionType === "post") {
-  const updatedFrameMetadata = await framesClient.proxy.post(
-    frameInfo.postUrl,
-    payload,
-  );
-  const updatedFrameInfo = getFrameInfo(updatedFrameMetadata.extractedTags);
-  setFrameInfo(updatedFrameInfo);
-} else if (actionType === "post_redirect") {
-  // If the button action type was `post_redirect`
-  console.log("Redirecting to: ", frameUrl);
-  const { redirectedTo } = await framesClient.proxy.postRedirect(
-    frameInfo.postUrl,
-    payload,
-  );
-  console.log("Redirected to: ", redirectedTo);
-  window.open(redirectedTo, "_blank").focus();
-}
-```
+For inspiration and a deeper dive into how XMTP Frames can work across various domains, refer to the **[XMTP Frames Use Cases](/docs/use-cases/frames)** section below.
