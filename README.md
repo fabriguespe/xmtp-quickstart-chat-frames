@@ -22,12 +22,6 @@ These are the foundational tools that allow developers to create, sign, and mana
 
 ### Rendering Frames in Your Application
 
-<div class=" rabbit  p-5 ">
-
-📥 <b>Need a quick reference?</b> Check out this GitHub repo: <a href="https://github.com/fabriguespe/xmtp-quickstart-frames">xmtp-quickstart-frames</a>
-
-</div>
-
 This part of the guide focuses on how to render XMTP frames within your application, making the frames interactive and visually integrated. It includes:
 
 - [**Validating Frame URL**](https://xmtp.org/docs/build/frames#validating-frame-url): Ensuring the URL embedded within the message content is appropriate for frame processing and meets XMTP standards.
