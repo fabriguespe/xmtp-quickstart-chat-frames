@@ -22,6 +22,11 @@ const styles = {
   redirectIcon: {
     marginLeft: "5px", // Space between the button label and the icon
   },
+  textInput: {
+    width: "80%",
+    outline: "none",
+    boxShadow: "none",
+  },
 };
 // New ButtonGroup component
 const ButtonGroup = ({ buttons, handleClick, frameButtonUpdating }) => {
@@ -108,6 +113,14 @@ export const Frame = ({
       </a>
       {interactionsEnabled && (
         <>
+          {textInput !== undefined && (
+            <input
+              type="text"
+              placeholder={textInput}
+              onChange={onTextInputChange}
+              style={styles.textInput}
+            />
+          )}
           <div style={styles.buttonContainer}>
             <ButtonGroup
               buttons={buttons}
@@ -115,15 +128,6 @@ export const Frame = ({
               frameButtonUpdating={frameButtonUpdating}
             />
           </div>
-          {textInput !== undefined && (
-            <input
-              type="text"
-              value={textInput}
-              onChange={onTextInputChange}
-              style={styles.textInput}
-              disabled={!interactionsEnabled}
-            />
-          )}
         </>
       )}
       {!interactionsEnabled && (

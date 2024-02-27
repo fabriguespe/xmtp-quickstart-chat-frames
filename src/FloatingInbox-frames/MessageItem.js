@@ -22,6 +22,11 @@ const MessageItem = ({
   const [frameButtonUpdating, setFrameButtonUpdating] = useState(0);
   const [textInputValue, setTextInputValue] = useState("");
 
+  function onTextInputChange(event) {
+    // Update the state or variable here
+    setTextInputValue(event.target.value); // Assuming you're using React hooks
+  }
+
   const conversationTopic = message.conversationTopic;
 
   const handleFrameButtonClick = async (buttonIndex, action = "post") => {
@@ -162,7 +167,7 @@ const MessageItem = ({
             frameButtonUpdating={frameButtonUpdating}
             interactionsEnabled={isXmtpFrame(frameMetadata)}
             textInput={frameMetadata?.frameInfo?.textInput?.content}
-            onTextInputChange={setTextInputValue}
+            onTextInputChange={onTextInputChange}
           />
         )}
         <div style={styles.footer}>
