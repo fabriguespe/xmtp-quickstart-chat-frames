@@ -118,7 +118,7 @@ const InboxPage = () => {
           Logout
         </button>
       )}
-      <h1>XMTP Frames Quickstart</h1>
+      <h1>Chat Frames Quickstart</h1>
       <section className="App-section">
         <button
           className="home-button"
